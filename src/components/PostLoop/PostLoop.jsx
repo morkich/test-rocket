@@ -36,9 +36,9 @@ const PostLoop = (props) => {
 
   let [searchQuery, setSearchQuery] = useState(history.location.search ? parsed['s'] : '');
 
-  // useEffect(() => {
-  //   console.log('useEffect');
-  // }, [posts]);
+  useEffect(() => {
+    console.log('useEffect');
+  }, [posts]);
   
   useEffect(() => {    
     dispatch(getUsersThunk());
@@ -48,7 +48,7 @@ const PostLoop = (props) => {
 
   useEffect(() => {
     history.push({search: `?s=${searchQuery}`})
-  }, [history])
+  }, [history, searchQuery])
 
   const onFilterChange = (event) => {
     setSearchQuery(event.target.value);
