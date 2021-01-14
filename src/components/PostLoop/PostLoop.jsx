@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { getPostsThunk } from '../../redux/posts-reducer';
@@ -28,12 +28,18 @@ const PostLoop = (props) => {
   const history = useHistory();
   const dispatch = useDispatch();
   const parsed = queryString.parse(history.location.search.substr(1));
-  const posts = useSelector(getPostsState, shallowEqual);
+  const postsFresh = useSelector(getPostsState, shallowEqual);
   const postsLoading = useSelector(getPostsLoadingState, shallowEqual);
   const users = useSelector(getUsersState, shallowEqual);  
 
+  let posts = useMemo(() => postsFresh, [postsFresh]);
+
   let [searchQuery, setSearchQuery] = useState(history.location.search ? parsed['s'] : '');
 
+  // useEffect(() => {
+  //   console.log('useEffect');
+  // }, [posts]);
+  
   useEffect(() => {    
     dispatch(getUsersThunk());
     const parsed = queryString.parse(history.location.search.substr(1));
@@ -42,7 +48,7 @@ const PostLoop = (props) => {
 
   useEffect(() => {
     history.push({search: `?s=${searchQuery}`})
-  }, [history, searchQuery])
+  }, [history])
 
   const onFilterChange = (event) => {
     setSearchQuery(event.target.value);
@@ -52,6 +58,8 @@ const PostLoop = (props) => {
     event.preventDefault(); 
     dispatch(getPostsThunk(searchQuery.toLowerCase()));
   }
+
+  console.log(posts);
 
   let postLoop = posts.map(post => (
     <PostCard       
